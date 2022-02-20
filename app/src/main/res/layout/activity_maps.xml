@@ -73,7 +73,7 @@
                 android:ems="10"
                 android:inputType="textPersonName"
                 android:minHeight="48dp"
-                android:text="Elevation" />
+                android:text="W altitude" />
 
             <TextView
                 android:id="@+id/ele"
