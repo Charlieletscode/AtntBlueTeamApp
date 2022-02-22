@@ -28,6 +28,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+//import org.matthiaszimmermann.location.Location;
+import org.matthiaszimmermann.location.egm96.Geoid;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -39,18 +41,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     FusedLocationProviderClient fusedLocationProviderClient;
     TextView latitudeTextView, longitTextView, eleTextView;
     int input;
-    double longi, lati;
+    double longi, lati, temp;
     EditText txt;
     Button b;
     private LocationManager mLocationManager;
     private double mLastMslAltitude;
     private Context mContext;
 
+    /**
+     * convert the wgs84 altitude to the egm96 altitude at the provided location.
+     */
+    public double transAltitude(double wgs84altitude, double latitude, double longitude) {
+        return wgs84altitude + Geoid.getOffset(new org.matthiaszimmermann.location.Location(latitude,longitude));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+        Geoid.init();
         latitudeTextView = findViewById(R.id.lat);
         longitTextView = findViewById(R.id.lon);
         eleTextView = findViewById(R.id.ele);
@@ -128,7 +137,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         longitTextView.setText(Double.toString(longi));
                         eleTextView.setText(Double.toString(mLastMslAltitude));
                     if (currentLocation.hasAltitude()){
-                        eleTextView.setText(Double.toString(currentLocation.getAltitude()));
+                        temp = new Double(transAltitude(new Double(currentLocation.getAltitude()), new Double(lati),new Double(longi)));
+                        temp = new Double(currentLocation.getAltitude()-temp);
+                        eleTextView.setText(Double.toString(temp));
                     }
                 SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
                     assert supportMapFragment != null;
