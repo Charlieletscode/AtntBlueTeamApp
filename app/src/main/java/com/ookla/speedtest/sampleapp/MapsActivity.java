@@ -1,7 +1,8 @@
-package com.example.myapplication;
+package com.ookla.speedtest.sampleapp;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.GpsStatus;
 import android.location.Location;
@@ -17,7 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import com.example.myapplication.databinding.ActivityMapsBinding;
+import com.ookla.speedtest.sampleapp.databinding.ActivityMapsBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -41,15 +42,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     FusedLocationProviderClient fusedLocationProviderClient;
     TextView latitudeTextView, longitTextView, eleTextView;
     int input;
-    double longi, lati, temp;
+    public float longi, lati,temp;
     EditText txt;
     Button b;
     private LocationManager mLocationManager;
-    private double mLastMslAltitude;
+    private float mLastMslAltitude;
     private Context mContext;
 
     /**
      * convert the wgs84 altitude to the egm96 altitude at the provided location.
+     * @return
      */
     public double transAltitude(double wgs84altitude, double latitude, double longitude) {
         return wgs84altitude + Geoid.getOffset(new org.matthiaszimmermann.location.Location(latitude,longitude));
@@ -72,10 +74,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                input = Integer.parseInt(txt.getText().toString());
                 fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MapsActivity.this);
                 fetchLocation();
+
+                Intent intent = new Intent(MapsActivity.this, MainActivity.class);
+                startActivity(intent);
                 // Showing the user input
                 Toast.makeText(getApplicationContext(), "refreshed", Toast.LENGTH_SHORT).show();
             }
         });
+
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         fetchLocation();
     }
@@ -110,7 +116,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // Parse altitude above sea level, Detailed description of NMEA string here http://aprs.gids.nl/nmea/#gga
             if (type.startsWith("$GPGGA")) {
                 if (!tokens[9].isEmpty()) {
-                    mLastMslAltitude = Double.parseDouble(tokens[9]);
+                    mLastMslAltitude = Float.parseFloat(tokens[9]);
                 }
             }
         }
@@ -129,19 +135,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onSuccess(Location location) {
                 if (location != null) {
                     currentLocation = location;
-                    lati = currentLocation.getLatitude();
-                    longi = currentLocation.getLongitude();
+                    lati = (float) currentLocation.getLatitude();
+                    longi = (float) currentLocation.getLongitude();
                     Toast.makeText(getApplicationContext(), currentLocation.getLatitude() + "" + currentLocation.getLongitude(), Toast.LENGTH_SHORT).show();
 
-                        latitudeTextView.setText(Double.toString(lati));
-                        longitTextView.setText(Double.toString(longi));
-                        eleTextView.setText(Double.toString(mLastMslAltitude));
+                    latitudeTextView.setText(Float.toString(lati));
+                    longitTextView.setText(Float.toString(longi));
+                    eleTextView.setText(Float.toString(mLastMslAltitude));
                     if (currentLocation.hasAltitude()){
-                        temp = new Double(transAltitude(new Double(currentLocation.getAltitude()), new Double(lati),new Double(longi)));
-                        temp = new Double(currentLocation.getAltitude()-temp);
-                        eleTextView.setText(Double.toString(temp));
+                        temp = new Float(transAltitude(new Float(currentLocation.getAltitude()), new Float(lati),new Float(longi)));
+                        temp = new Float(currentLocation.getAltitude()-temp);
+                        eleTextView.setText(Float.toString((float) temp));
+                        MainActivity.temp = new Float(temp);
+
                     }
-                SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+                    SupportMapFragment supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
                     assert supportMapFragment != null;
                     supportMapFragment.getMapAsync(MapsActivity.this);
                 }
