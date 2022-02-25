@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "587403998936",
+    "project_id": "drone-34faa",
+    "storage_bucket": "drone-34faa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:587403998936:android:19c0aaadb895d332b889ad",
+        "android_client_info": {
+          "package_name": "com.ookla.speedtest.sampleapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "587403998936-cgso73dodk3872lm1r19khv5du5uh27a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ookla.speedtest.sampleapp",
+            "certificate_hash": "5a9f511304b7eab5e3e538622027b0b2317c0154"
+          }
+        },
+        {
+          "client_id": "587403998936-6rtt4vr58a02pj6cvjcbe725psuroho5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvl2EazQWfoaC46nswKZ6SDnADcPgF_58"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "587403998936-6rtt4vr58a02pj6cvjcbe725psuroho5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
