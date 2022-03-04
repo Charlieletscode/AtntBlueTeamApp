@@ -48,6 +48,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationManager mLocationManager;
     private float mLastMslAltitude;
     private Context mContext;
+    public static boolean flag = false;
 
     /**
      * convert the wgs84 altitude to the egm96 altitude at the provided location.
@@ -74,9 +75,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //                input = Integer.parseInt(txt.getText().toString());
                 fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MapsActivity.this);
                 fetchLocation();
-
-                Intent intent = new Intent(MapsActivity.this, MainActivity.class);
-                startActivity(intent);
+                long start = System.currentTimeMillis();
+                try {
+                    Thread.sleep(2000);
+                    Intent intent = new Intent(MapsActivity.this, MainActivity.class);
+                    startActivity(intent);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 // Showing the user input
                 Toast.makeText(getApplicationContext(), "refreshed", Toast.LENGTH_SHORT).show();
             }
