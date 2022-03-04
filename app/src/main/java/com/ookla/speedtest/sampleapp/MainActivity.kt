@@ -18,6 +18,7 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.ookla.speedtest.sdk.SpeedtestSDK
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.concurrent.thread
 
 
 /**
@@ -36,15 +37,17 @@ class MainActivity : AppCompatActivity() {
     companion object {
         @kotlin.jvm.JvmField
         var temp: Float= 0.0f
-        @kotlin.jvm.JvmField
-        var flag: Boolean = false;
+//        @kotlin.jvm.JvmField
+//        var flag: Boolean = false;
         // Use the key provided to you instead of the test key below
         const val SPEEDTEST_SDK_API_KEY = "d4yshimc47kvoe7l"
         const val SPEEDTEST_SDK_RESULT_KEY = "81su553x2no9c4g0"
         var lastTestGuid: String? = null
+        var pre = 0;
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -59,13 +62,24 @@ class MainActivity : AppCompatActivity() {
         actionList.adapter = arrayAdapter
         actionList.onItemClickListener = OnItemClickListener { _, _, position, _ ->
             startActivityWith(availableTests[position])
-    //            for(i in 1..10){
-                startActivity(Intent(this@MainActivity, MapsActivity::class.java))
-                startActivityWith(availableTests[position])
-
-//            Toast.makeText(this, temp.toString()+"second", Toast.LENGTH_SHORT).show()
-//        }
+            for(i in 1..10){
+            if(position!=9){
+                pre = position
+//                    startActivityWith(availableTests[position])
+                thread {
+                    Thread.sleep(40000)
+                    println("10000")
+                    Thread.sleep(10000)
+                    startActivity(Intent(this@MainActivity, MapsActivity::class.java))
+                    Thread.sleep(1000)
+                    startActivityWith(availableTests[9])
+                    }
+                }else{
+                Toast.makeText(this, pre.toString()+"sec", Toast.LENGTH_SHORT).show()
+            }
+            Toast.makeText(this, temp.toString()+"second", Toast.LENGTH_SHORT).show()
         }
+    }
 
         foregroundSwitch.isChecked = SpeedtestSDK.getInstance().getSpeedtestSDKOptions().foregroundServiceOption.enabled
         foregroundSwitch.setOnCheckedChangeListener { _, enabled ->

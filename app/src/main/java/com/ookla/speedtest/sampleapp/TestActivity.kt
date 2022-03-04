@@ -8,13 +8,14 @@ import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.os.Parcelable
 import android.os.PowerManager
+import android.util.Log
 import android.view.WindowManager
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.dandan.jsonhandleview.library.JsonViewLayout
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -29,8 +30,8 @@ import com.ookla.speedtest.sdk.result.OoklaError
 import kotlinx.android.synthetic.main.activity_test.*
 import java.lang.RuntimeException
 import java.time.format.DateTimeFormatter
-
-
+import com.google.firebase.firestore.auth.User
+import com.ookla.speedtest.sampleapp.MainActivity.Companion
 
 
 /**
@@ -65,7 +66,9 @@ class TestActivity : AppCompatActivity() {
     private var wifiLock : WifiManager.WifiLock? = null
     private var taskManager: TaskManager? = null
 
-    private var testFinished: Boolean = false
+    companion object {
+     var testFinished: Boolean = false
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,11 +130,81 @@ class TestActivity : AppCompatActivity() {
         }
     }
 
+    data class Salad(
+        val ispName: Array<String>,
+        val latency: Array<Float>,
+        val startLatitude: Array<Float>,
+        val startLongitude: Array<Float>,
+        val endLatitude: Array<Float>,
+        val endLongitude: Array<Float>,
+        val ipAddress: Array<String>,
+        val jitter: Array<Float>,
+        val regionName: Array<String>,
+        val serverName: Array<String>,
+        val downloadMbps: Array<Float>,
+        val uploadMbps: Array<Float>,
+        val placeName: Array<String>,
+        val placeType: Array<String>,
+        val subregion: Array<String>,
+        val postalCode: Array<String>,
+        val altitude: Array<Float>,
+        var uuid: Array<String>) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Salad
+
+            if (!ispName.contentEquals(other.ispName)) return false
+            if (!latency.contentEquals(other.latency)) return false
+            if (!startLatitude.contentEquals(other.startLatitude)) return false
+            if (!startLongitude.contentEquals(other.startLongitude)) return false
+            if (!endLatitude.contentEquals(other.endLatitude)) return false
+            if (!endLongitude.contentEquals(other.endLongitude)) return false
+            if (!ipAddress.contentEquals(other.ipAddress)) return false
+            if (!jitter.contentEquals(other.jitter)) return false
+            if (!regionName.contentEquals(other.regionName)) return false
+            if (!serverName.contentEquals(other.serverName)) return false
+            if (!downloadMbps.contentEquals(other.downloadMbps)) return false
+            if (!uploadMbps.contentEquals(other.uploadMbps)) return false
+            if (!placeName.contentEquals(other.placeName)) return false
+            if (!placeType.contentEquals(other.placeType)) return false
+            if (!subregion.contentEquals(other.subregion)) return false
+            if (!postalCode.contentEquals(other.postalCode)) return false
+            if (!altitude.contentEquals(other.altitude)) return false
+            if (!uuid.contentEquals(other.uuid)) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = ispName.contentHashCode()
+            result = 31 * result + latency.contentHashCode()
+            result = 31 * result + startLatitude.contentHashCode()
+            result = 31 * result + startLongitude.contentHashCode()
+            result = 31 * result + endLatitude.contentHashCode()
+            result = 31 * result + endLongitude.contentHashCode()
+            result = 31 * result + ipAddress.contentHashCode()
+            result = 31 * result + jitter.contentHashCode()
+            result = 31 * result + regionName.contentHashCode()
+            result = 31 * result + serverName.contentHashCode()
+            result = 31 * result + downloadMbps.contentHashCode()
+            result = 31 * result + uploadMbps.contentHashCode()
+            result = 31 * result + placeName.contentHashCode()
+            result = 31 * result + placeType.contentHashCode()
+            result = 31 * result + subregion.contentHashCode()
+            result = 31 * result + postalCode.contentHashCode()
+            result = 31 * result + altitude.contentHashCode()
+            result = 31 * result + uuid.contentHashCode()
+            return result
+        }
+    }
+
     private fun runFetchStoredResult(speedtestSDK: SpeedtestSDK) {
         var fbFirestore : FirebaseFirestore? = null
         fbFirestore = FirebaseFirestore.getInstance()
 
-        database = Firebase.database.reference
+        database = Firebase.database.reference.child("user");
 
         val guid = MainActivity.lastTestGuid
         val logger = LoggingTestHandler(output, jsonView)
@@ -171,10 +244,11 @@ class TestActivity : AppCompatActivity() {
                         "altitude" to MainActivity.temp
 
                     )
-                    database.child("users").child(currentTimestamp.toString()).setValue(data)
-                    println(result.endLatitude.toString())
-                    println("Minseok")
-                    MainActivity.flag = true;
+                    database.child(currentTimestamp.toString()).setValue(data)
+
+//                    println(result.endLatitude.toString())
+//                    println("Minseok")
+//                    MainActivity.flag = true;
                 } catch(exc: RuntimeException) {
                     logger.log("Failed to convert result to json: ${exc.localizedMessage}")
                 }
@@ -226,7 +300,7 @@ class TestActivity : AppCompatActivity() {
             override fun onConfigFetchFinished(validatedConfig: ValidatedConfig?) {
                 if (testFinished) {
                     logger.log("Test Finished")
-                    runFetchStoredResult(SpeedtestSDK.getInstance())
+//                    runFetchStoredResult(SpeedtestSDK.getInstance())
                     return;
                 }
                 val handlerWithStageProgression =
