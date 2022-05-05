@@ -23,7 +23,7 @@ allprojects {
         maven {
             // You can use the absolute path to the sdk root here
             // e.g. /User/Bob/ookla/sdk/
-            url "../../sdk/"
+            url "../speedtest-sdk-android/sdk/"
        }
     }
 }
